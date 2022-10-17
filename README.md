@@ -5,3 +5,7 @@
 <div align="center">
   <img src="./assets/code_structure.png">
 </div>
+
+
+## Author
+[Junho Kim](http://bit.ly/jhkim_resume)
