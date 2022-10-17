@@ -11,7 +11,8 @@ import torch.multiprocessing as torch_multiprocessing
 
 class ImageDataset(Dataset):
     def __init__(self, img_size, dataset_path):
-        self.samples = self.listdir(dataset_path)
+        self.train_images = self.listdir(dataset_path)
+        self.train_labels = [] # make label
 
         # interpolation=transforms.InterpolationMode.BICUBIC, antialias=True
         transform_list = [
@@ -28,19 +29,20 @@ class ImageDataset(Dataset):
         file_path = []
         for ext in extensions:
             file_path += glob(os.path.join(dir_path, '*.' + ext))
-
         file_path.sort()
         return file_path
 
     def __getitem__(self, index):
-        sample_path = self.samples[index]
+        sample_path = self.train_images[index]
         img = Image.open(sample_path).convert('RGB')
         img = self.transform(img)
 
-        return img
+        label = self.train_labels[index]
+
+        return img, label
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.train_images)
 
 def check_folder(log_dir):
     if not os.path.exists(log_dir):
