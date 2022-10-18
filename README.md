@@ -7,5 +7,13 @@
 </div>
 
 
+## Example
+### Pytorch
+* [StyleGAN2](https://github.com/taki0112/stylegan2-pytorch)
+
+### Tensorflow
+* [Denoising-Diffusion-GANs](https://github.com/taki0112/denoising-diffusion-gan-Tensorflow/blob/main/src/DDGAN.py)
+
+
 ## Author
 [Junho Kim](http://bit.ly/jhkim_resume)
