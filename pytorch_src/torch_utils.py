@@ -162,6 +162,11 @@ def reduce_loss_dict(loss_dict):
 
     return reduced_losses
 
+def reduce_loss(loss):
+    dist.all_reduce(loss, op=dist.ReduceOp.SUM)
+    loss /= get_world_size()
+
+    return loss
 
 def cross_entroy_loss(logit, label):
     loss = torch.nn.CrossEntropyLoss()(logit, label)
