@@ -171,3 +171,31 @@ def reduce_loss(loss):
 def cross_entroy_loss(logit, label):
     loss = torch.nn.CrossEntropyLoss()(logit, label)
     return loss
+
+def local_plot_loss(train_summary_writer, loss, curr_iter):
+    train_summary_writer.add_scalar('loss', loss.item(), global_step=curr_iter)
+
+##### NSML function, only use in NAVER
+def init_plot():
+    try:
+        # Reset metrics of current run with a simple HTTP DELETE request.
+        requests.delete(os.environ['NSML_METRIC_API']).raise_for_status()
+    except requests.exceptions.RequestException:
+        # Sometimes, the HTTP request might fail, but the training process should not be stopped.
+        traceback.print_exc()
+
+def v2_plot_loss(step, loss, lr):
+    data_dict = {}
+    data_dict['loss'] = loss.item()
+    data_dict['lr'] = lr
+    data_dict['@step'] = step
+
+    metrics_data = json.dumps(data_dict)
+
+    try:
+        # Report JSON data to the NSML metric API server with a simple HTTP POST request.
+        requests.post(os.environ['NSML_METRIC_API'], data=metrics_data)
+    except requests.exceptions.RequestException:
+        # Sometimes, the HTTP request might fail, but the training process should not be stopped.
+        traceback.print_exc()
+
