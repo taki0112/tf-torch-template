@@ -23,8 +23,6 @@ def parse_args():
 
     parser.add_argument('--checkpoint_dir', type=str, default='checkpoint',
                         help='Directory name to save the checkpoints')
-    parser.add_argument('--result_dir', type=str, default='results',
-                        help='Directory name to save the generated images')
     parser.add_argument('--log_dir', type=str, default='logs',
                         help='Directory name to save training logs')
     parser.add_argument('--sample_dir', type=str, default='samples',
@@ -38,10 +36,7 @@ def check_args(args):
     # --checkpoint_dir
     check_folder(args.checkpoint_dir)
 
-    # --result_dir
-    check_folder(args.result_dir)
-
-    # --result_dir
+    # --log_dir
     check_folder(args.log_dir)
 
     # --sample_dir
