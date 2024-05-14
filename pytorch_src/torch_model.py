@@ -160,6 +160,7 @@ class DeepNetwork():
 
         # start training
         if rank == 0:
+            # init_plot()
             print()
             print(self.dataset_path)
             print("Dataset number : ", self.dataset_num)
@@ -191,8 +192,9 @@ class DeepNetwork():
             loss = reduce_loss(loss)
 
             if rank == 0:
-                for k, v in losses.items():
-                    train_summary_writer.add_scalar(k, v, global_step=idx)
+                local_plot_loss(train_summary_writer, loss, idx)
+                # v2_plot_loss(curr_iter, loss, self.optim.param_groups[0]['lr'])
+                
 
 
                 elapsed = time.time() - iter_start_time
