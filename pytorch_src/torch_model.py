@@ -55,7 +55,6 @@ class DeepNetwork():
         super(DeepNetwork, self).__init__()
         self.model_name = 'DeepNetwork'
         self.checkpoint_dir = args['checkpoint_dir']
-        self.result_dir = args['result_dir']
         self.log_dir = args['log_dir']
         self.sample_dir = args['sample_dir']
         self.dataset_name = args['dataset']
