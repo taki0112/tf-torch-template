@@ -137,8 +137,6 @@ class DeepNetwork():
             print('max_steps: {}'.format(self.iteration))
             print()
 
-        losses = {'loss': 0.0}
-
 
         for idx in range(self.start_iteration, self.iteration):
             iter_start_time = time.time()
@@ -154,9 +152,8 @@ class DeepNetwork():
                     print("network parameters : ", format(n_params, ','))
 
             loss = self.train_step(real_img, label, device=device)
-            losses['loss'] = loss
 
-            losses = reduce_loss_dict(losses)
+            loss = reduce_loss(loss)
 
             if rank == 0:
                 for k, v in losses.items():
@@ -164,7 +161,7 @@ class DeepNetwork():
 
 
                 elapsed = time.time() - iter_start_time
-                print(self.log_template.format(idx, self.iteration, elapsed, losses['loss']))
+                print(self.log_template.format(idx, self.iteration, elapsed, loss.item()))
 
                 if np.mod(idx, self.save_freq) == 0 or idx == self.iteration - 1:
                     if rank == 0:
