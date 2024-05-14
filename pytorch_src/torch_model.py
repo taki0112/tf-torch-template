@@ -41,7 +41,6 @@ def get_different_generator_for_each_rank(num_gpu, rank, seed=None):
         rank_seed = seed * num_gpu + rank
         g.manual_seed(rank_seed)
         return g
-def run_fn(rank, ar
            
 def run_fn(rank, args, world_size):
     device = torch.device('cuda', rank)
@@ -78,14 +77,6 @@ class DeepNetwork():
         self.save_freq = args['save_freq']
         self.log_template = 'step [{}/{}]: elapsed: {:.2f}s, loss: {:.3f}'
 
-        """ Directory """
-        self.sample_dir = os.path.join(self.sample_dir, self.model_dir)
-        check_folder(self.sample_dir)
-        self.checkpoint_dir = os.path.join(self.checkpoint_dir, self.model_dir)
-        check_folder(self.checkpoint_dir)
-        self.log_dir = os.path.join(self.log_dir, self.model_dir)
-        check_folder(self.log_dir)
-
         """ Dataset """
         dataset_path = './dataset'
         self.dataset_path = os.path.join(dataset_path, self.dataset_name)
@@ -96,6 +87,15 @@ class DeepNetwork():
     def build_model(self, rank, device):
         """ Init process """
         build_init_procss(rank, world_size=self.NUM_GPUS, device=device)
+
+        if rank == 0:
+            """ Directory """
+            self.sample_dir = os.path.join(self.sample_dir, self.model_dir)
+            check_folder(self.sample_dir)
+            self.checkpoint_dir = os.path.join(self.checkpoint_dir, self.model_dir)
+            check_folder(self.checkpoint_dir)
+            self.log_dir = os.path.join(self.log_dir, self.model_dir)
+            check_folder(self.log_dir)
 
         """ Dataset Load """
         dataset = ImageDataset(dataset_path=self.dataset_path, img_size=self.img_size)
