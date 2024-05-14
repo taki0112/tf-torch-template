@@ -8,6 +8,7 @@ def parse_args():
 
     # training
     parser.add_argument('--phase', type=str, default='train', help='train or test')
+    parser.add_argument('--dataset', type=str, default='imagenet')
     parser.add_argument('--iteration', type=int, default=200000)
     parser.add_argument('--img_size', type=int, default=256, help='The size of image')
     parser.add_argument('--batch_size', type=int, default=4, help='The size of batch size')
