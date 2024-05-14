@@ -5,13 +5,47 @@ import time
 from torch_network import *
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np
+import random
 from functools import partial
 
-print = partial(print, flush=True)
+# print = partial(print, flush=True)
 
+def set_torch_backend(prefer_speed=True, seed=None):
+    torch.backends.cudnn.enabled = True
+
+    if prefer_speed:
+        torch.backends.cudnn.allow_tf32 = True
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.set_float32_matmul_precision('high')
+        torch.backends.cudnn.benchmark = True
+    else: # prefer the performance
+        torch.backends.cudnn.allow_tf32 = False
+        torch.backends.cuda.matmul.allow_tf32 = False
+        torch.set_float32_matmul_precision('highest')
+        torch.backends.cudnn.benchmark = False
+
+    if seed is None:
+        torch.backends.cudnn.deterministic = False
+    else:
+        torch.backends.cudnn.deterministic = True
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
+def get_different_generator_for_each_rank(num_gpu, rank, seed=None):
+    if seed is None:
+        return None
+    else:
+        g = torch.Generator()
+        rank_seed = seed * num_gpu + rank
+        g.manual_seed(rank_seed)
+        return g
+def run_fn(rank, ar
+           
 def run_fn(rank, args, world_size):
     device = torch.device('cuda', rank)
-    torch.backends.cudnn.benchmark = True
+    set_torch_backend(prefer_speed=True, seed=args['seed'])
 
     model = DeepNetwork(args, world_size)
     model.build_model(rank, device)
@@ -26,6 +60,7 @@ class DeepNetwork():
         self.log_dir = args['log_dir']
         self.sample_dir = args['sample_dir']
         self.dataset_name = args['dataset']
+        self.seed = args['seed']
 
         self.NUM_GPUS = NUM_GPUS
 
@@ -67,7 +102,8 @@ class DeepNetwork():
         self.dataset_num = dataset.__len__()
         loader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, num_workers=4,
                                              sampler=distributed_sampler(dataset, rank=rank, num_replicas=self.NUM_GPUS, shuffle=True),
-                                             drop_last=True, pin_memory=True)
+                                             drop_last=True, pin_memory=True,
+                                             generator=get_different_generator_for_each_rank(self.NUM_GPUS, rank, seed=self.seed))
         self.dataset_iter = infinite_iterator(loader)
 
 
