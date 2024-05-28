@@ -8,6 +8,7 @@ from glob import glob
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel
 import torch.multiprocessing as torch_multiprocessing
+import json, requests, traceback
 
 class ImageDataset(Dataset):
     def __init__(self, img_size, dataset_path):
